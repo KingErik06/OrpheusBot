@@ -1,0 +1,1 @@
+#🎵 Initial commit: Python Discord bot structure
