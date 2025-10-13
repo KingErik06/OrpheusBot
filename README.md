@@ -2,8 +2,8 @@
 
 *"Como Orfeu encantava até as pedras com sua lira, eu trago harmonia e ordem para seu servidor Discord."*
 
-![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
-![Discord.py](https://img.shields.io/badge/discord.py-2.0+-green.svg)
+![Python](https://img.shields.io/badge/Python-3.8+-green.svg)
+![Discord.py](https://img.shields.io/badge/discord.py-2.0+-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 ## ✨ Características
