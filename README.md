@@ -50,9 +50,12 @@ DISCORD_TOKEN=seu_token_aqui
 ## 🎮 Comandos Principais
 
 ### 🎵 Música
-- `!tocar [música]` - Reproduz uma música
+- `!entrar` - Conecta ao canal de voz
+- `!tocar [música/URL]` - Reproduz uma música do YouTube
 - `!pular` - Pula a música atual
-- `!fila` - Mostra a fila
+- `!fila` - Mostra a fila de músicas
+- `!parar` - Para a música e limpa a fila
+- `!sair` - Sai do canal de voz
 
 ### ⚖️ Moderação  
 - `!limpar [número]` - Limpa mensagens
