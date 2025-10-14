@@ -25,6 +25,19 @@
 - Design inspirado na antiguidade clássica
 - Performance estável como os deuses do Olimpo
 
+### 🎨 Embeds Profissionais com Dados do YouTube
+- **Thumbnails automáticas** - Imagens das músicas
+- **Informações completas** - Título, canal, duração, visualizações  
+- **Design temático** - Cores do YouTube com identidade visual
+- **Links clicáveis** - Acesso rápido ao vídeo original
+- **Layout responsivo** - Campos organizados e informativos
+
+### 🔊 Sistema de Áudio Avançado
+- **Controle de volume** em tempo real (0-100%)
+- **Qualidade de áudio** otimizada com FFmpeg
+- **Streaming eficiente** sem download de arquivos
+- **Sistema de filas** inteligente e estável
+
 ## 🚀 Instalação
 
 ```bash
@@ -56,6 +69,7 @@ DISCORD_TOKEN=seu_token_aqui
 - `!fila` - Mostra a fila de músicas
 - `!parar` - Para a música e limpa a fila
 - `!sair` - Sai do canal de voz
+- `!volume [0-100]` - Ajusta o volume ou mostra o atual
 
 ### ⚖️ Moderação  
 - `!limpar [número]` - Limpa mensagens
