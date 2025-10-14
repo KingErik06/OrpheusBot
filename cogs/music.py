@@ -1,5 +1,4 @@
 #Importações:
-
 import discord
 from discord.ext import commands
 import yt_dlp as youtube_dl
@@ -82,19 +81,63 @@ class Music(commands.Cog):
                 #Se não estava tocando nada, começa a tocar
                 if not ctx.voice_client.is_playing():
                     self.proxima(ctx, queue)
-                    await ctx.send(f"🎵 **Tocando agora:** {player.title}")
+                    #Criar um embed profissional:
+                    embed = discord.Embed(
+                        title="🎵 Tocando Agora",
+                        description=f"**{player.title}**",
+                        color=0xFF0000, #Vermelho YouTube
+                        url=player.url
+                    )
+                    #Adiciona a thumbnail:
+                    if 'thumbnail' in player.data:
+                        embed.set_thumbnail(url=player.data['thumbnail'])
+                    #Adiciona o uploader:
+                    if 'uploader' in player.data:
+                        embed.add_field(name="🎤 Canal", value=player.data['uploader'], inline=True)
+                    #Adiciona a duração:
+                    if 'duration' in player.data:
+                        duration = player.data['duration']
+                        minutes = duration // 60
+                        seconds = duration % 60
+                        embed.add_field(name="⏱️ Duração", value=f"{minutes}:{seconds:02d}", inline=True)
+                    #Adiciona as visualizações:
+                    if 'view_count' in player.data:
+                        views = player.data['view_count']
+                        embed.add_field(name="👀 Visualizações", value=f"{views:,}", inline=True)
+                    #Adiciona botão de pular:
+                    embed.set_footer(text="Use '!pular' para pular esta música.")
+                    await ctx.send(embed=embed)
+
                 else:
-                    await ctx.send(f"🎵 **Adicionado à fila:** {player.title}")
+                    embed_fila = discord.Embed(
+                        title="📥 Adicionado à Fila",
+                        description=f"**{player.title}**",
+                        color=0xFFA500 #laranja
+                    )
+                    #Adiciona a thumbnail
+                    if 'thumbnail' in player.data:
+                        embed_fila.set_thumbnail(url=player.data['thumbnail'])
+                    #Adiciona o uploader
+                    if 'uploader' in player.data:
+                        embed_fila.add_field(name="🎤 Canal", value=player.data['uploader'], inline=True)
+                    await ctx.send(embed=embed_fila)
 
         except Exception as e:
             await ctx.send(f"Erro ao tocar música: {str(e)}.")
     
     def proxima(self, ctx, queue):
+        #Verifica se há músicas na fila
         if queue:
             player = queue.pop(0)
-            ctx.voice_client.play(player, after=lambda e: self.proxima(ctx, queue))
 
-    
+            def after_playing(error):
+                if error:
+                    print(f"❌ Erro na reprodução: {error}")
+                if queue:
+                    self.proxima(ctx, queue)
+            ctx.voice_client.play(player, after=after_playing)
+
+
     @commands.command()
     async def pular(self, ctx):
         #Pula a música atual

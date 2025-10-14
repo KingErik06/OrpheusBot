@@ -16,9 +16,10 @@ class OrpheusBot(commands.Bot):
     
     async def setup_hook(self):
         for filename in os.listdir('./cogs'):
-            if filename.endswith('.py') and filename != "__init__.py":
-                await self.load_extension(f'cogs.{filename[:-3]}')
-        print(f"🎵 Cog {filename} carregado.")
+            #Verifica se é arquivo python e não começa com __
+            if os.path.isfile(os.path.join('./cogs', filename)) and filename.endswith('.py') and not filename.startswith('__'):
+                await self.load_extension(f"cogs.{filename[:-3]}")
+        print("🎵 Todos os cogs carregados.")
 
 
     async def on_ready(self):
