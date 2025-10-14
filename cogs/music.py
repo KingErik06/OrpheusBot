@@ -46,7 +46,8 @@ class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.queues = {}
-        print("🎵 Cod de Música Carregado!")
+        self.volumes = {}
+        print("🎵 Cog de Música Carregado!")
 
     def get_queue(self, guild_id):
         if guild_id not in self.queues:
@@ -127,7 +128,7 @@ class Music(commands.Cog):
     
     def proxima(self, ctx, queue):
         #Verifica se há músicas na fila
-        if queue:
+        if queue and ctx.voice_client and ctx.voice_client.is_connected():
             player = queue.pop(0)
 
             def after_playing(error):
@@ -135,7 +136,28 @@ class Music(commands.Cog):
                     print(f"❌ Erro na reprodução: {error}")
                 if queue:
                     self.proxima(ctx, queue)
+
+            volume = self.volumes.get(ctx.guild.id, 50) / 100
+            player.volume = volume
             ctx.voice_client.play(player, after=after_playing)
+
+
+    @commands.command()
+    async def volume(self, ctx, volume: int = 100):
+        if volume is None:
+            current_volume = self.volumes.get(ctx.guild.id, 50)
+            await ctx.send(f"🔊 Volume atual: **{current_volume}%**")
+            return
+
+        if volume < 0 or volume > 100:
+            await ctx.send("❌ Volume deve estar entre 0 e 100!")
+            return
+        
+        self.volumes[ctx.guild.id] = volume
+        if ctx.voice_client and ctx.voice_client.source:
+            ctx.voice_client.source.volume = volume / 100
+
+        await ctx.send(f"🔊 Volume ajustado para **{volume}%**")
 
 
     @commands.command()
