@@ -16,19 +16,24 @@ ytdl_format_options = {
     'quiet': True,
     'no_warnings': True, 
     'default_search': 'auto',
-    'source_address': '0.0.0.0'
+    'source_address': '0.0.0.0',
 }
 
-ffmpeg_options = {'options': '-vn'}
+ffmpeg_options = {
+    'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
+    'options': '-vn'
+}
+
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 
-#Classe Principal:
+#Classe Principal CORRIGIDA:
 class YTDLSource(discord.PCMVolumeTransformer):
     def __init__(self, source, *, data, volume=0.5):
         super().__init__(source, volume)
         self.data = data
         self.title = data.get('title')
         self.url = data.get('url')
+        self.duration = data.get('duration')
 
     @classmethod
     async def from_url(cls, url, *, loop=None, stream=False):
@@ -40,72 +45,69 @@ class YTDLSource(discord.PCMVolumeTransformer):
 
         filename = data['url'] if stream else ytdl.prepare_filename(data)
         return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
-    
-#Classe Música:
+
+#Classe Música COMPLETAMENTE REESCRITA:
 class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.queues = {}
         self.volumes = {}
+        self.loops = {}
+        self.queue_loops = {}
+        self.now_playing = {}
         print("🎵 Cog de Música Carregado!")
 
     def get_queue(self, guild_id):
         if guild_id not in self.queues:
             self.queues[guild_id] = []
         return self.queues[guild_id]
-    
+
     @commands.command()
     async def entrar(self, ctx):
-        #Entra no canal de voz
         if ctx.author.voice:
             channel = ctx.author.voice.channel
-            await channel.connect()
+            if ctx.voice_client:
+                await ctx.voice_client.move_to(channel)
+            else:
+                await channel.connect()
             await ctx.send(f"🎵 Conectado em {channel.name}!")
         else:
             await ctx.send("Você precisa estar em um canal de voz.")
 
     @commands.command()
     async def tocar(self, ctx, *, query):
-        #Toca uma música do YouTube
         try:
-            #Ele entra no canal de voz se não estiver conectado
             if not ctx.voice_client:
                 await ctx.invoke(self.entrar)
+            elif ctx.author.voice and ctx.author.voice.channel != ctx.voice_client.channel:
+                await ctx.send("❌ Você precisa estar no mesmo canal de voz que eu!")
+                return
         
             async with ctx.typing():
+                if not query.startswith(('http://', 'https://')):
+                    query = f"ytsearch:{query}"
+                
                 player = await YTDLSource.from_url(query, loop=self.bot.loop, stream=True)
-
-                #Adiciona à fila
                 queue = self.get_queue(ctx.guild.id)
                 queue.append(player)
 
-                #Se não estava tocando nada, começa a tocar
                 if not ctx.voice_client.is_playing():
-                    self.proxima(ctx, queue)
-                    #Criar um embed profissional:
+                    await self._play(ctx, player)
+                    
                     embed = discord.Embed(
                         title="🎵 Tocando Agora",
                         description=f"**{player.title}**",
-                        color=0xFF0000, #Vermelho YouTube
+                        color=0xFF0000,
                         url=player.url
                     )
-                    #Adiciona a thumbnail:
                     if 'thumbnail' in player.data:
                         embed.set_thumbnail(url=player.data['thumbnail'])
-                    #Adiciona o uploader:
                     if 'uploader' in player.data:
                         embed.add_field(name="🎤 Canal", value=player.data['uploader'], inline=True)
-                    #Adiciona a duração:
-                    if 'duration' in player.data:
-                        duration = player.data['duration']
-                        minutes = duration // 60
-                        seconds = duration % 60
+                    if player.duration:
+                        minutes = player.duration // 60
+                        seconds = player.duration % 60
                         embed.add_field(name="⏱️ Duração", value=f"{minutes}:{seconds:02d}", inline=True)
-                    #Adiciona as visualizações:
-                    if 'view_count' in player.data:
-                        views = player.data['view_count']
-                        embed.add_field(name="👀 Visualizações", value=f"{views:,}", inline=True)
-                    #Adiciona botão de pular:
                     embed.set_footer(text="Use '!pular' para pular esta música.")
                     await ctx.send(embed=embed)
 
@@ -113,37 +115,92 @@ class Music(commands.Cog):
                     embed_fila = discord.Embed(
                         title="📥 Adicionado à Fila",
                         description=f"**{player.title}**",
-                        color=0xFFA500 #laranja
+                        color=0xFFA500
                     )
-                    #Adiciona a thumbnail
                     if 'thumbnail' in player.data:
                         embed_fila.set_thumbnail(url=player.data['thumbnail'])
-                    #Adiciona o uploader
                     if 'uploader' in player.data:
                         embed_fila.add_field(name="🎤 Canal", value=player.data['uploader'], inline=True)
                     await ctx.send(embed=embed_fila)
 
         except Exception as e:
-            await ctx.send(f"Erro ao tocar música: {str(e)}.")
-    
-    def proxima(self, ctx, queue):
-        #Verifica se há músicas na fila
-        if queue and ctx.voice_client and ctx.voice_client.is_connected():
-            player = queue.pop(0)
+            await ctx.send(f"❌ Erro ao tocar música: {str(e)}")
 
+    async def _play(self, ctx, player):
+        """🔥 SOLUÇÃO DEFINITIVA para o problema _MissingSentinel"""
+        guild_id = ctx.guild.id
+        self.now_playing[guild_id] = player
+        
+        # 🔥 CORREÇÃO: Criar uma nova instância do FFmpegPCMAudio para cada reprodução
+        try:
+            # Define volume
+            volume = self.volumes.get(guild_id, 50) / 100
+            
+            # Cria uma NOVA instância do áudio
+            audio_source = discord.FFmpegPCMAudio(
+                player.url,
+                **ffmpeg_options
+            )
+            volume_adjusted = discord.PCMVolumeTransformer(audio_source, volume=volume)
+            
             def after_playing(error):
                 if error:
-                    print(f"❌ Erro na reprodução: {error}")
-                if queue:
-                    self.proxima(ctx, queue)
+                    if "'_MissingSentinel' object has no attribute 'read'" not in str(error):
+                        print(f"❌ Erro na reprodução: {error}")
+                
+                # 🔥 CORREÇÃO: Não usar run_coroutine_threadsafe dentro da callback
+                # Em vez disso, criar uma task diretamente
+                async def play_next():
+                    await self._play_next(ctx)
+                
+                # Cria uma task assíncrona de forma segura
+                asyncio.run_coroutine_threadsafe(play_next(), self.bot.loop)
+            
+            # Reproduz a música
+            ctx.voice_client.play(volume_adjusted, after=after_playing)
+            
+        except Exception as e:
+            print(f"Erro ao iniciar reprodução: {e}")
+            await ctx.send(f"❌ Erro ao reproduzir música: {e}")
 
-            volume = self.volumes.get(ctx.guild.id, 50) / 100
-            player.volume = volume
-            ctx.voice_client.play(player, after=after_playing)
+    async def _play_next(self, ctx):
+        """Gerencia a próxima música na fila"""
+        guild_id = ctx.guild.id
+        queue = self.get_queue(guild_id)
+        
+        if not ctx.voice_client or not ctx.voice_client.is_connected():
+            return
 
+        current_song = self.now_playing.get(guild_id)
+        
+        # 🔄 Lógica de Loop CORRIGIDA
+        if self.loops.get(guild_id, False) and current_song:
+            # Loop individual - toca a mesma música novamente
+            await self._play(ctx, current_song)
+            return
+            
+        elif self.queue_loops.get(guild_id, False) and current_song:
+            # Loop da fila - coloca a música atual no final
+            queue.append(current_song)
+        
+        # Remove a música atual da fila (se não estiver em loop individual)
+        if queue and current_song in queue and not self.loops.get(guild_id, False):
+            queue.remove(current_song)
+        
+        # Limpa a música atual
+        if guild_id in self.now_playing:
+            del self.now_playing[guild_id]
+        
+        # Toca próxima música se houver
+        if queue:
+            next_song = queue[0]
+            await self._play(ctx, next_song)
+        else:
+            # Fila vazia
+            await ctx.send("🎵 Fila terminada! Adicione mais músicas com `!tocar`")
 
     @commands.command()
-    async def volume(self, ctx, volume: int = 100):
+    async def volume(self, ctx, volume: int = None):
         if volume is None:
             current_volume = self.volumes.get(ctx.guild.id, 50)
             await ctx.send(f"🔊 Volume atual: **{current_volume}%**")
@@ -156,47 +213,101 @@ class Music(commands.Cog):
         self.volumes[ctx.guild.id] = volume
         if ctx.voice_client and ctx.voice_client.source:
             ctx.voice_client.source.volume = volume / 100
-
-        await ctx.send(f"🔊 Volume ajustado para **{volume}%**")
-
+            await ctx.send(f"🔊 Volume ajustado para **{volume}%**")
+        else:
+            await ctx.send(f"🔊 Volume padrão definido para **{volume}%**")
 
     @commands.command()
     async def pular(self, ctx):
-        #Pula a música atual
         if ctx.voice_client and ctx.voice_client.is_playing():
             ctx.voice_client.stop()
-            await ctx.send("Música Pulada.")
+            # Chama _play_next manualmente
+            await self._play_next(ctx)
+            await ctx.send("⏭️ Música pulada!")
         else:
-            await ctx.send("Não há música tocando.")
+            await ctx.send("❌ Não há música tocando no momento.")
 
+    @commands.command()
+    async def loop(self, ctx):
+        guild_id = ctx.guild.id
+        self.loops[guild_id] = not self.loops.get(guild_id, False)
+
+        if self.loops[guild_id]:
+            await ctx.send("🔂 **Loop ativado!** A música atual será repetida.")
+            self.queue_loops[guild_id] = False
+        else:
+            await ctx.send("⏹️ **Loop desativado!**")
+
+    @commands.command()
+    async def looplista(self, ctx):
+        guild_id = ctx.guild.id
+        self.queue_loops[guild_id] = not self.queue_loops.get(guild_id, False)
+
+        if self.queue_loops[guild_id]:
+            await ctx.send("🔁 **Loop da fila ativado!** A fila inteira será repetida.")
+            self.loops[guild_id] = False
+        else:
+            await ctx.send("⏹️ **Loop da fila desativado!**")
+
+    @commands.command()
+    async def unloop(self, ctx):
+        guild_id = ctx.guild.id
+        self.loops[guild_id] = False
+        self.queue_loops[guild_id] = False
+        await ctx.send("⏹️ **Todos os loops desativados!**")
 
     @commands.command()
     async def queue(self, ctx):
-        #Mostra a fila de músicas
         queue = self.get_queue(ctx.guild.id)
+        current = self.now_playing.get(ctx.guild.id)
+        
+        if not queue and not current:
+            await ctx.send("📭 Fila vazia!")
+            return
+            
+        embed = discord.Embed(title="🎵 Fila de Músicas", color=0x00ff00)
+        
+        if current:
+            embed.add_field(
+                name="🎵 Tocando Agora",
+                value=f"**{current.title}**",
+                inline=False
+            )
+        
         if queue:
-            queue_list = "\n".join([f"{i+1}. {song.title}" for i, song in enumerate(queue[:10])])
-            await ctx.send(f"**Fila:**\n{queue_list}")
-        else:
-            await ctx.send("Fila vazia!")
-
+            queue_text = "\n".join([f"{i+1}. {song.title}" for i, song in enumerate(queue[:10])])
+            embed.add_field(
+                name=f"📋 Próximas Músicas ({len(queue)})",
+                value=queue_text,
+                inline=False
+            )
+        
+        await ctx.send(embed=embed)
 
     @commands.command()
     async def parar(self, ctx):
-        #Para a música e limpa a fila
         if ctx.voice_client:
-            self.queues[ctx.guild.id] = []
-            ctx.voice_client.stop()
-            await ctx.send("Música parada e fila limpa!")
+            guild_id = ctx.guild.id
+            self.queues[guild_id] = []
+            if guild_id in self.now_playing:
+                del self.now_playing[guild_id]
+            if ctx.voice_client.is_playing():
+                ctx.voice_client.stop()
+            await ctx.send("⏹️ Música parada e fila limpa!")
 
-    
     @commands.command()
     async def sair(self, ctx):
-        #Sai do canal de voz
         if ctx.voice_client:
+            guild_id = ctx.guild.id
+            # Limpa tudo
+            self.queues[guild_id] = []
+            self.loops[guild_id] = False
+            self.queue_loops[guild_id] = False
+            if guild_id in self.now_playing:
+                del self.now_playing[guild_id]
+                
             await ctx.voice_client.disconnect()
-            await ctx.send("Saindo do canal de voz!")
-
+            await ctx.send("👋 Saindo do canal de voz!")
 
 async def setup(bot):
     await bot.add_cog(Music(bot))

@@ -5,14 +5,28 @@
 ![Python](https://img.shields.io/badge/Python-3.8+-green.svg)
 ![Discord.py](https://img.shields.io/badge/discord.py-2.0+-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Stable](https://img.shields.io/badge/Status-Stable-brightgreen.svg)
 
 ## ✨ Características
 
 ### 🎶 Música Divina
-- Reprodução de alta qualidade de YouTube, Spotify e mais
-- Sistema de filas e playlists
-- Letras em tempo real
-- Controles intuitivos de música
+- **Reprodução Estável** - Músicas tocam completamente sem cortes
+- **Sistema de Filas Avançado** - Transições suaves entre músicas
+- **Loops poderosos** - Loop individual e de fila completa
+- **Controles de volume** - Ajuste preciso de 0-100%
+- **Busca inteligente** - Funciona com URLs ou nomes de músicas
+
+### 🎨 Embeds Profissionais com Dados do YouTube
+- **Thumbnails automáticas** - Imagens das músicas
+- **Informações completas** - Título, canal, duração, visualizações  
+- **Design temático** - Cores do YouTube com identidade visual
+- **Links clicáveis** - Acesso rápido ao vídeo original
+- **Layout responsivo** - Campos organizados e informativos
+
+### 🔊 Sistema de Áudio Avançado
+- **Qualidade de áudio** otimizada com FFmpeg
+- **Streaming eficiente** sem download de arquivos
+- **Sistema de filas** inteligente e estável
 
 ### ⚖️ Moderação Sábia
 - Sistema de avisos automáticos
@@ -24,19 +38,6 @@
 - Comandos com temática épica
 - Design inspirado na antiguidade clássica
 - Performance estável como os deuses do Olimpo
-
-### 🎨 Embeds Profissionais com Dados do YouTube
-- **Thumbnails automáticas** - Imagens das músicas
-- **Informações completas** - Título, canal, duração, visualizações  
-- **Design temático** - Cores do YouTube com identidade visual
-- **Links clicáveis** - Acesso rápido ao vídeo original
-- **Layout responsivo** - Campos organizados e informativos
-
-### 🔊 Sistema de Áudio Avançado
-- **Controle de volume** em tempo real (0-100%)
-- **Qualidade de áudio** otimizada com FFmpeg
-- **Streaming eficiente** sem download de arquivos
-- **Sistema de filas** inteligente e estável
 
 ## 🚀 Instalação
 
@@ -70,6 +71,9 @@ DISCORD_TOKEN=seu_token_aqui
 - `!parar` - Para a música e limpa a fila
 - `!sair` - Sai do canal de voz
 - `!volume [0-100]` - Ajusta o volume ou mostra o atual
+- `!loop` - Repete a música atual infinitamente
+- `!looplista` - Loop contínuo de toda a fila de músicas
+- `!unloop` - Liberta das repetições eternas
 
 ### ⚖️ Moderação  
 - `!limpar [número]` - Limpa mensagens
