@@ -34,6 +34,12 @@
 - Logs detalhados de moderação
 - Auto-moderação inteligente
 
+##🛡️ Sistema de Punições Automáticas
+- 3 Avisos = Mute automático
+- 5 Avisos = Ban automático
+- Remoção automática de punições quando avisos diminuem
+- Embeds profissionais com status em tempo real
+
 ### 🎭 Inspirado na Mitologia Grega
 - Comandos com temática épica
 - Design inspirado na antiguidade clássica
@@ -75,9 +81,11 @@ DISCORD_TOKEN=seu_token_aqui
 - `!looplista` - Loop contínuo de toda a fila de músicas
 - `!unloop` - Liberta das repetições eternas
 
-### ⚖️ Moderação  
+### ⚖️ Moderação Avançada
 - `!limpar [número]` - Limpa mensagens
-- `!aviso @usuário` - Avisa um usuário
+- `!aviso @usuário [motivo]` - Avisa um usuário com sistema progressivo
+- `!avisos @usuário` - Mostra histórico de avisos
+- `!removeraviso @usuário ID` - Remove aviso específico
 
 ### 🔧 Utilitários
 - `!ping` - Mostra a latência
