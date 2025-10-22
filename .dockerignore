@@ -1,0 +1,13 @@
+.git
+.gitignore
+README.md
+.env
+.vscode
+.idea
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+Thumbs.db
+docker-compose.override.yml
