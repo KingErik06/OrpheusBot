@@ -3,6 +3,7 @@ import discord
 from discord.ext import commands
 import os
 from dotenv import load_dotenv
+from cogs.config import Config
 
 #Carregar variáveis de ambiente do arquivo .env:
 load_dotenv()
@@ -10,7 +11,7 @@ load_dotenv()
 #Definição do bot:
 class OrpheusBot(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix='!', intents=discord.Intents.all(), help_command=None)
+        super().__init__(command_prefix=Config.BOT_PREFIX, intents=discord.Intents.all(), help_command=None)
         print("🎵 OrpheusBot Inicializado!")
 
     
@@ -30,8 +31,9 @@ class OrpheusBot(commands.Bot):
 
 #Inicialização do bot:
 async def main():
+    Config.validate()
     bot = OrpheusBot()
-    await bot.start(os.getenv('DISCORD_TOKEN'))
+    await bot.start(Config.DISCORD_TOKEN)
 
 if __name__ == '__main__':
     import asyncio
