@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands
 import os
 from dotenv import load_dotenv
-from cogs.config import Config
+from config import Config
 
 #Carregar variáveis de ambiente do arquivo .env:
 load_dotenv()
