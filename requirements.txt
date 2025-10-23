@@ -2,3 +2,7 @@ discord.py[voice]
 python-dotenv
 PyNaCl
 yt-dlp
+pytest
+pytest-asyncio
+pytest-mock
+aiohttp

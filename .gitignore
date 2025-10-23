@@ -31,3 +31,8 @@ logs/
 # Configurações do bot
 config.json
 config.yaml
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
