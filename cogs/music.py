@@ -310,39 +310,5 @@ class Music(commands.Cog):
             await ctx.voice_client.disconnect()
             await ctx.send("👋 Saindo do canal de voz!")
 
-    @commands.command()
-    async def ajuda(self, ctx):
-        embed = discord.Embed(
-            title="🎵 Comandos do OrpheusBot",
-            description="Aqui estão todos os comandos disponíveis:",
-            color=0x00ff00
-        )
-        embed.add_field(
-            name="🎶 Música",
-        value="`!tocar <música>` - Toca uma música\n"
-              "`!pular` - Pula a música atual\n"
-              "`!parar` - Para e limpa a fila\n"
-              "`!volume <1-100>` - Ajusta volume\n"
-              "`!queue` - Mostra a fila",
-        inline=False
-        )
-        embed.add_field(
-            name="🔁 Loop", 
-        value="`!loop` - Loop da música atual\n"
-              "`!looplista` - Loop da fila inteira\n"
-              "`!unloop` - Desativa todos os loops",
-        inline=False
-        )
-        embed.add_field(
-            name="🔊 Voz",
-        value="`!entrar` - Entra no seu canal\n"
-              "`!sair` - Sai do canal",
-        inline=False
-        )
-
-        embed.set_footer(text="Use !ajuda para ver essa mensagem novamente")
-
-        await ctx.send(embed=embed)
-
 async def setup(bot):
     await bot.add_cog(Music(bot))
