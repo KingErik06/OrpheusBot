@@ -258,6 +258,72 @@ class Music(commands.Cog):
         await ctx.send("⏹️ **Todos os loops desativados!**")
 
     @commands.command()
+    async def radio(self, ctx, station="lofi"):
+        stations = {
+            'lofi': {
+                'url': 'https://www.youtube.com/watch?v=jfKfPfyJRdk',
+                'name': '🎧 Lofi Hip Hop Radio',
+                'emoji': '🎧'},
+            'rock': {
+                'url': 'https://www.youtube.com/watch?v=Nt27aBceerI',
+                'name': '🎸 Rock Classics Radio',
+                'emoji': '🎸'},
+            'jazz': {
+                'url': 'https://www.youtube.com/watch?v=1QI_YCb6_Sk',
+                'name': '🎷 Smooth Jazz Radio',
+                'emoji': '🎷'}}
+        
+        if station not in stations:
+            available = ", ".join([f"`{s}`" for s in stations.keys()])
+            embed = discord.Embed(
+                title="📻 Estações Disponíveis",
+                description=f"Estações: {available}",
+                color=0xff0000)
+            embed.add_field(name="Exemplo", value="`!radio lofi`", inline=False)
+            await ctx.send(embed=embed)
+            return
+
+        station_info = stations[station]
+        embed=discord.Embed(
+            title=f"{station_info['emoji']} Tocando {station_info['name']}",
+            description=f"**Estação:** {station_info['name']}",
+            color=0x00ff00)
+        embed.add_field(name="🎵 Status", value="Carregando rádio...", inline=False)
+        embed.set_footer(text="Use !parar para parar a reprodução.")
+        loading_msg = await ctx.send(embed=embed)
+
+        await ctx.invoke(self.tocar, query=station_info['url'])
+
+        embed.set_field_at(0, name="🎵 Status", value="✅ Rádio carregada com sucesso!", inline=False)
+        await loading_msg.edit(embed=embed)
+
+    @commands.command()
+    async def radios(self, ctx):
+        embed = discord.Embed(
+        title="📻 Rádios Online Disponíveis",
+        description="Escolha uma estação com `!radio [nome]`",
+        color=0x7289DA)
+    
+        embed.add_field(
+        name="🎧 Lofi Hip Hop", 
+        value="`!radio lofi` - Música relaxante para estudar/trabalhar",
+        inline=False)
+    
+        embed.add_field(
+        name="🎸 Rock Classics", 
+        value="`!radio rock` - Clássicos do rock internacional", 
+        inline=False)
+    
+        embed.add_field(
+        name="🎷 Smooth Jazz", 
+        value="`!radio jazz` - Jazz suave e instrumental",
+        inline=False)
+    
+        embed.set_footer(text="Novas estações em breve!")
+    
+        await ctx.send(embed=embed)
+
+    @commands.command()
     async def queue(self, ctx):
         queue = self.get_queue(ctx.guild.id)
         current = self.now_playing.get(ctx.guild.id)
