@@ -14,7 +14,7 @@ jobs:
       run: docker compose build
 
     - name: Run tests
-      run: docker compose run --rm bot pytest tests/ -v
+      run: docker compose run --rm orpheus-bot pytest tests/ -v
 
     - name: Test Docker container starts
       run: |
