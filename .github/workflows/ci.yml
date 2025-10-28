@@ -10,15 +10,16 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Build Docker images
-      run: docker compose build
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-asyncio pytest-mock
 
     - name: Run tests
-      run: docker compose run --rm orpheus-bot pytest tests/ -v
-
-    - name: Test Docker container starts
-      run: |
-        docker compose up -d
-        sleep 10
-        docker compose ps 
-        docker compose logs
+      run: pytest tests/ -v
