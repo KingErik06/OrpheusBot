@@ -1,32 +1,46 @@
+<div align="center">
+
 # 🎵 Orpheus Bot
 
-*"Como Orfeu encantava até as pedras com sua lira, eu trago harmonia e ordem para seu servidor Discord."*
+**"Como Orfeu encantava até as pedras com sua lira, eu trago harmonia e ordem para seu servidor Discord."**
 
-![Python](https://img.shields.io/badge/Python-3.8+-green.svg)
-![Discord.py](https://img.shields.io/badge/discord.py-2.0+-blue.svg)
-![License](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Stable](https://img.shields.io/badge/Status-Stable-brightgreen.svg)
+[![Python](https://img.shields.io/badge/Python-3.11+-green.svg)](https://python.org)
+[![Discord.py](https://img.shields.io/badge/discord.py-2.3+-blue.svg)](https://discordpy.readthedocs.io)
+[![Docker](https://img.shields.io/badge/Docker-Ready-cyan.svg)](https://docker.com)
+[![Tests](https://img.shields.io/badge/Tests-14%20passed-purple.svg)](https://github.com/KingErik06/OrpheusBot)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+*Música de alta qualidade, filas inteligentes e controles avançados - tudo em português!*
+
+</div>
 
 ## ✨ Características
 
-### 🎶 Música Divina
-- **Reprodução Estável** - Músicas tocam completamente sem cortes
-- **Sistema de Filas Avançado** - Transições suaves entre músicas
-- **Loops poderosos** - Loop individual e de fila completa
-- **Controles de volume** - Ajuste preciso de 0-100%
-- **Busca inteligente** - Funciona com URLs ou nomes de músicas
+### 🎶 Sistema de Música Divino
+- **Qualidade de Estúdio**: Áudio crystal-clear com FFmpeg
+- **Busca Inteligente**: Funciona com URLs ou nomes de músicas
+- **Sistema de Loops**: Loop individual e loop de fila
+- **Filas Inteligentes**: Gestão avançada com embeds visuais 
+- **Controle de Volume**: Ajuste dinâmico em tempo real
+
+### ⚡ Tecnologia de Ponta
+- **Containerizado**: Docker completo para qualquer ambiente
+- **Testado Rigorosamente**: 14 testes unitários garantindo qualidade
+- **Arquitetura Modular**: Cogs para fácil expansão
+- **Performance Otimizada**: Async/await para máxima eficiência
 
 ### 🎨 Embeds Profissionais com Dados do YouTube
-- **Thumbnails automáticas** - Imagens das músicas
-- **Informações completas** - Título, canal, duração, visualizações  
-- **Design temático** - Cores do YouTube com identidade visual
-- **Links clicáveis** - Acesso rápido ao vídeo original
-- **Layout responsivo** - Campos organizados e informativos
+- **Thumbnails Automáticas**: Imagens das músicas
+- **Informações Completas**: Título, canal, duração, visualizações  
+- **Design Temático**: Cores do YouTube com identidade visual
+- **Links Clicáveis**: Acesso rápido ao vídeo original
+- **Layout Responsivo**: Campos organizados e informativos
 
-### 🔊 Sistema de Áudio Avançado
-- **Qualidade de áudio** otimizada com FFmpeg
-- **Streaming eficiente** sem download de arquivos
-- **Sistema de filas** inteligente e estável
+### 🎮 Experiência do Usuário
+- **Comandos em Português**: Interface nativa para usuários BR
+- **Embeds Visuais**: Interface rica e informativa
+- **Resposta Rápida**: Comandos otimizados para velocidade
+- **Tratemento de Erros**: Feedback claro e útil
 
 ### ⚖️ Moderação Sábia
 - Sistema de avisos automáticos
@@ -34,39 +48,41 @@
 - Logs detalhados de moderação
 - Auto-moderação inteligente
 
-##🛡️ Sistema de Punições Automáticas
+### 🛡️ Sistema de Punições Automáticas
 - 3 Avisos = Mute automático
 - 5 Avisos = Ban automático
 - Remoção automática de punições quando avisos diminuem
 - Embeds profissionais com status em tempo real
 
-### 🎭 Inspirado na Mitologia Grega
-- Comandos com temática épica
-- Design inspirado na antiguidade clássica
-- Performance estável como os deuses do Olimpo
+## 🚀 Começando Rápido
 
-## 🚀 Instalação
+### Pré-requisitos
+- **Docker** e **Docker Compose** ([Instalar](https://docs.docker.com/get-docker/))
+- **Discord Bot Token** ([Criar](https://discord.com/developers/applications))
 
+### ⚡ Instalação em 2 Minutos
+1. **Clone o repositório**
 ```bash
-# Clone o repositório
 git clone https://github.com/KingErik06/OrpheusBot.git
 cd OrpheusBot
+```
 
-# Instale as dependências
-pip install -r requirements.txt
-
-# Configure as variáveis de ambiente
+2. **Configure o Ambiente**
+```bash
+# Copie o arquivo de exemplo
 cp .env.example .env
-# Edite o .env com seu token do Discord
-```
-## ⚙️ Configuração
 
-1. Crie um aplicativo em [Discord Developer Portal](https://discord.com/developers/applications)
-2. Vá em "Bot" e copie o token
-3. Cole no arquivo `.env`:
-```env
-DISCORD_TOKEN=seu_token_aqui
+# Edite com seu token do Discord:
+# DISCORD_TOKEN=seu_token_aqui
 ```
+
+3. **Execute com Docker**
+```bash
+docker compose up -d
+```
+
+**Pronto! Seu bot está rodando!**
+
 ## 🎮 Comandos Principais
 
 ### 🎵 Música
@@ -90,21 +106,39 @@ DISCORD_TOKEN=seu_token_aqui
 ### 🔧 Utilitários
 - `!ping` - Mostra a latência
 - `!info` - Informações do bot
+- `!ajuda` - Mostra todos os comandos
 
 ## 🏗️ Estrutura
 ```
 OrpheusBot/
+├── docker-compose.yml
+├── Dockerfile
+├── tests
 ├── cogs/
 │   ├── music.py
 │   ├── moderation.py
 │   └── utils.py
-├── main.py
-└── requirements.txt
+├── config.py
+├── requirements.txt
+└── main.py
 ```
+
+## Executando os Testes
+```bash
+# Com Docker (recomendado)
+docker compose run --rm bot pytest tests/ -v
+
+# Localmente 
+pip install -r requirements.txt
+pytest tests/ -v
+```
+
 ## 📄 Licença
 
 MIT License
 
----
+## Author 
+
+**Erik** - [KingErik06](https://github.com/KingErik06)
 
 *Desenvolvido com 💙 e um toque de mitologia grega*
