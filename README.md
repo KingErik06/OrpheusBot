@@ -9,6 +9,7 @@
 [![Docker](https://img.shields.io/badge/Docker-Ready-cyan.svg)](https://docker.com)
 [![Tests](https://img.shields.io/badge/Tests-14%20passed-purple.svg)](https://github.com/KingErik06/OrpheusBot)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![CI](https://github.com/KingErik06/OrpheusBot/actions/workflows/ci.yml/badge.svg)](https://github.com/LingErik06/OrpheusBot/actions)
 
 *Música de alta qualidade, filas inteligentes e controles avançados - tudo em português!*
 
